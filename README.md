@@ -4,12 +4,12 @@ This custom step uses a Retrieval Augmented Generation (RAG) approach to provide
 
 LLMs require context to provide relevant answers, especially for questions based on a local body of knowledge or document corpus.  
 
-A RAG approach, explained in simple terms, retrieves relevant data from a knowledge base and provides the same to an LLM to use as context.  Results based on RAG are expected to reduce LLM hallucinations (i.e. an LLM provide irrelevant or false answers).  This step queries a Chromadb vector store and passes retrieved documents to an Azure OpenAI service.   
+A RAG approach, explained in simple terms, retrieves relevant data from a knowledge base and provides the same to an LLM to use as context.  Results based on RAG are expected to reduce LLM hallucinations (i.e. an LLM provides irrelevant or false answers).  This custom step queries a Chromadb vector store and passes retrieved documents to an Azure OpenAI service.   
 
 
 ## A general idea
 
-The following animated gif provides a basic idea of the working of this step.
+This animated gif provides a basic idea: 
 
 ![LLM - Azure OpenAI RAG](./img/Azure_OpenAI.gif)
 
@@ -36,11 +36,11 @@ Current assumptions for this initial versions (future versions may improve upon 
 
 2. Users may load all PDFs in a directory on the SAS Server (filesystem), or select a PDF of their choice.
 
-3. The code assumes use of a Chroma DB vector store.  Users may choose to replace this with other supported vector stores.
+3. The code assumes use of a Chroma DB vector store.  Users may choose to replace this with other vector stores supported by the langchain framework by modifying the underlying code.
 
-4. The code uses the langchain LLM framework.  
+4. The step uses the langchain LLM framework.
 
-5. PDFs (containing text) are currently the only loadable file format allowed.  Users are however free to ingest various other document types into a Chroma DB collection beforehand, using the "Vector Databases - Hydrate Chroma DB collection" SAS Studio Custom Step (refer documentation)
+5. PDFs (containing text) are currently the only loadable file format in this step.  Users are however free to ingest various other document types into a Chroma DB collection beforehand, using the ["Vector Databases - Hydrate Chroma DB collection"](https://github.com/sassoftware/sas-studio-custom-steps/tree/main/Vector%20Databases%20-%20Hydrate%20Chroma%20DB%20Collection) SAS Studio Custom Step (refer documentation)
 
 6. User has already configured Azure OpenAI to deploy both an embedding function and LLM service, or knows the deployment names. 
 
@@ -54,13 +54,13 @@ Current assumptions for this initial versions (future versions may improve upon 
 
 3. Python packages to be installed:
 
-   i.    [langchain](https://pypi.org/project/langchain/)
-   ii.   [langchain-community](https://pypi.org/project/langchain-community/)
-   iii.  [langchain-openai](https://pypi.org/project/langchain-openai/)
-   iv.   [PyPDF](https://pypi.org/project/pypdf/)
-   v.    [sentence-transformers](https://pypi.org/project/sentence-transformers/)
-   vi.   [chromadb](https://pypi.org/project/chromadb/)
-   vii.  [pysqlite-binary](https://pypi.org/project/pysqlite-binary/)
+   1. [langchain](https://pypi.org/project/langchain/)
+   2. [langchain-community](https://pypi.org/project/langchain-community/)
+   3. [langchain-openai](https://pypi.org/project/langchain-openai/)
+   4. [PyPDF](https://pypi.org/project/pypdf/)
+   5. [sentence-transformers](https://pypi.org/project/sentence-transformers/)
+   6. [chromadb](https://pypi.org/project/chromadb/)
+   7. [pysqlite-binary](https://pypi.org/project/pysqlite-binary/)
 
 4. Valid Azure OpenAI service with embedding & large language models deployed.  [Refer here for instructions](https://learn.microsoft.com/en-us/azure/ai-services/openai/quickstart?tabs=command-line%2Cpython-new&pivots=programming-language-studio) 
 
@@ -70,31 +70,31 @@ Current assumptions for this initial versions (future versions may improve upon 
 ----
 ### Input Parameters
 
-1. Source file location (optional, default is Context already loaded): In case you wish to present new source files to use as context,  choose either selecting a folder or file. Otherwise, provide the name of an existing vector store collection in Configuration.
+1. **Source file location** (optional, default is Context already loaded): In case you wish to present new source files to use as context,  choose either selecting a folder or file. Otherwise, provide the name of an existing vector store collection in Configuration.
 
-2. Question (text area, required): Provide your question to the LLM. Note that this will be added to additional system prompt, to create a prompt that will be passed to the LLM.
+2. **Question** (text area, required): Provide your question to the LLM. Note that this will be added to additional system prompt, to create a prompt that will be passed to the LLM.
 
 ----
 ### Configuration 
 
-1. Embedding model (text field, required):  provide the name of your Azure OpenAI deployment of an OpenAI embedding model. For convenience, it's suggested to have the same name for your OpenAI deployment as the model you wish to use. For example, if your OpenAI embedding model happens to be text-embedding-3-small, use the same name for your deployment. 
+1. **Embedding model** (text field, required):  provide the name of your Azure OpenAI deployment of an OpenAI embedding model. For convenience, it's suggested to use the same name as the model you wish to use. For example, if your OpenAI embedding model happens to be text-embedding-3-small, use the same name for your deployment. 
 
-2. Vector Store persistent path (text field, defaults to /tmp if blank): provide a path to a ChromaDB database.  If blank, this defaults to /tmp on the filesystem. 
+2. **Vector store persistent path** (text field, defaults to /tmp if blank): provide a path to a ChromaDB database.  If blank, this defaults to /tmp on the filesystem. 
 
-3. Chroma DB collection name (text field): provide name of the Chroma DB collection you wish to use.  If the collection does not exist, a new one will be created. Ensure you have write access to the persistent area.
+3. **Chroma DB collection name** (text field): provide name of the Chroma DB collection you wish to use.  If the collection does not exist, a new one will be created. Ensure you have write access to the persistent area.
 
-4. Text generation model (text field, required): provide the name of an Azure OpenAI text generation deployment.  For convenience, you may choose to name this the same name as the OpenAI LLM. Example, gpt-35-turbo to gpt-35-turbo.
+4. **Text generation model** (text field, required): provide the name of an Azure OpenAI text generation deployment.  For convenience, you may choose to use the same name as the OpenAI LLM. Example, gpt-35-turbo to gpt-35-turbo.
 
-5. Azure OpenAI service details (file selector for key and text fields, required): provide a path to your Azure OpenAI access key.  Ensure this key is saved within a text file in a secure location on the filesystem.  Users are responsible for providing their keys to use this service.  In addition, also refer to your Azure OpenAI service to obtain the service endpoint and region.
+5. **Azure OpenAI service details** (file selector for key and text fields, required): provide a path to your Azure OpenAI access key.  Ensure this key is saved within a text file in a secure location on the filesystem.  Users are responsible for providing their keys to use this service.  In addition, also refer to your Azure OpenAI service to obtain the service endpoint and region.
 
 ----
 ### Output Specifications
 
 Results (the answer from the LLM) are printed by default to the output window.
 
-1. Context size (numeric stepper, default 10): select how many similar results from the vector store should be retrieved and provided as context to the LLM.  Note that a higher number results in more tokens provided as part of the prompt.
+1. **Context size** (numeric stepper, default 10): select how many similar results from the vector store should be retrieved and provided as context to the LLM.  Note that a higher number results in more tokens provided as part of the prompt.
 
- 2. Output table (output port, option): attach either a CAS table or sas7bdat to the output port of this node to hold results.  These results contain the LLM's answer, the original question and supporting retrieved results. 
+ 2. **Output table** (output port, option): attach either a CAS table or sas7bdat to the output port of this node to hold results.  These results contain the LLM's answer, the original question and supporting retrieved results. 
 
 ----
 ## Run-time Control
