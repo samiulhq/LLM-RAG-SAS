@@ -175,6 +175,9 @@ Refer [here](./extras/LLM%20-%20Azure%20Open%20AI%20RAG.sas) for the SAS program
 ----
 ## Change Log
 
+* Version 1.3.2 (04SEP2024) 
+    * Changed Python code generation step to allow running as a job
+
 * Version 1.3.1 (10JUL2024) 
     * Added option for load from SAS dataset
     * README / About tab minor edits
